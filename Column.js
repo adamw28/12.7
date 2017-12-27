@@ -3,7 +3,6 @@ function Column(id, name) {
 	this.id = id;
     this.name = name || 'No name given';
 	this.element = createColumn();
-
 	function createColumn() {
 		// TWORZENIE NOWYCH WĘZŁÓW
 		var column = $('<div class="column"></div>');
@@ -11,16 +10,17 @@ function Column(id, name) {
 		var columnCardList = $('<ul class="card-list"></ul>');
 		var columnDelete = $('<button class="btn-delete">x</button>');
 		var columnAddCard = $('<button class="column-add-card">Dodaj kartę</button>');
-		
+		columnTitle.attr('id', self.id);
 		// PODPINANIE ODPOWIEDNICH ZDARZEŃ POD WĘZŁY
 		columnDelete.click(function() {
 			self.deleteColumn();
 		});
-		
+		columnTitle.click(function(){
+			self.changeNameColumn();
+		})
 		columnAddCard.click(function(event) {
 			var cardName = prompt("Enter the name of the card");
 			event.preventDefault();
-			self.createCard(new Card(cardName));
 			$.ajax({
     			url: baseUrl + '/card',
     			method: 'POST',
@@ -43,7 +43,7 @@ function Column(id, name) {
 			return column;
 		}
 	}
-Column.prototype = {
+	Column.prototype = {
 	createCard: function(card) {
 	  this.element.children('ul').append(card.element);
 	},
@@ -56,5 +56,21 @@ Column.prototype = {
         self.element.remove();
       }
     });
- }
+ },
+ changeNameColumn: function(){
+		var self = this;var columnid = self.id;
+	console.log(columnid);
+		var newName = prompt('Enter new name of column');
+		$.ajax({
+    			url: baseUrl + '/column' + '/' + self.id,
+    			method: 'PUT',
+    			data: {
+    				name: newName,
+    				bootcamp_kanban_column_id: self.id
+    			},
+    			success: function(response) {
+        			self.element[0].children[0].innerHTML = self.name = newName;
+    			}
+			});
+	}
 };

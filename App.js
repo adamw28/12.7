@@ -13,6 +13,9 @@ $.ajax({
       setupColumns(response.columns);
     }
 });
+$(".column-title").click(function(){
+			self.changeNameColumn();
+		});
 function setupColumns(columns) {
     columns.forEach(function (column) {
   		var col = new Column(column.id, column.name);
