@@ -10,7 +10,6 @@ function Column(id, name) {
 		var columnCardList = $('<ul class="card-list"></ul>');
 		var columnDelete = $('<button class="btn-delete">x</button>');
 		var columnAddCard = $('<button class="column-add-card">Dodaj kartę</button>');
-		columnTitle.attr('id', self.id);
 		// PODPINANIE ODPOWIEDNICH ZDARZEŃ POD WĘZŁY
 		columnDelete.click(function() {
 			self.deleteColumn();
@@ -21,6 +20,7 @@ function Column(id, name) {
 		columnAddCard.click(function(event) {
 			var cardName = prompt("Enter the name of the card");
 			event.preventDefault();
+			var columnId = self.id;
 			$.ajax({
     			url: baseUrl + '/card',
     			method: 'POST',
@@ -29,8 +29,8 @@ function Column(id, name) {
     				bootcamp_kanban_column_id: self.id
     			},
     			success: function(response) {
-        			var card = new Card(response.id, cardName);
-        			self.createCard(card);
+        			var card = new Card(response.id, cardName, self.id);
+        			self.createCard(card,self.id);
     			}
 			});
 		});
@@ -58,8 +58,7 @@ function Column(id, name) {
     });
  },
  changeNameColumn: function(){
-		var self = this;var columnid = self.id;
-	console.log(columnid);
+		var self = this;
 		var newName = prompt('Enter new name of column');
 		$.ajax({
     			url: baseUrl + '/column' + '/' + self.id,
@@ -69,7 +68,8 @@ function Column(id, name) {
     				bootcamp_kanban_column_id: self.id
     			},
     			success: function(response) {
-        			self.element[0].children[0].innerHTML = self.name = newName;
+    				self.name = newName;
+        			self.element.find('.column-title').text(self.name);
     			}
 			});
 	}
